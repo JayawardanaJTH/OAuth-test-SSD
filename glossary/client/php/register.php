@@ -30,23 +30,15 @@ session_start();
                     <span class="h3">Online Store</span>
                 </div>
                 <div class="header-description">
-                    <!-- <p>Description about the business.</p> -->
-                    <div class="input-group">
 <?php
 if (!isset($_GET['action'])) {
+
     if (!empty($_SESSION['user_id'])) {
-        echo '<a href="#" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Log Out"></a>';
-
-        // Fetch user info from Google's userinfo endpoint
-        echo '<h3>User Info</h3>';
-        echo '<pre>';
-        $ch = curl_init('https://www.googleapis.com/oauth2/v3/userinfo');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $_SESSION['access_token']
-        ]);
-        curl_exec($ch);
-        echo '</pre>';
-
+        echo '<p>' . $_SESSION['email'] . '</p>';
+?>
+                    <div class="input-group">
+<?php
+        echo '<a href="../../server/google_login.php?action=logout" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Log Out"></a>';
     }
     else {
         echo '<a href="#" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Login"></a>';
@@ -108,7 +100,7 @@ if (!isset($_GET['action'])) {
                     </div>
                     <div class="row justify-content-center">
                         <div>
-                            <a href="../../server/login.php?action=google" class="text-decoration-none"><input class="btn btn-danger text-white" type="button" value="Sign in Google"></a>
+                            <a href="../../server/google_login.php?action=google" class="text-decoration-none"><input class="btn btn-danger text-white" type="button" value="Sign in Google"></a>
                         </div>
                     </div>
                     <div class="row justify-content-center">
@@ -116,7 +108,7 @@ if (!isset($_GET['action'])) {
                     </div>
                     <div class="row justify-content-center">
                         <div>
-                        <a href="../../server/google_login.php?action=facebook" class="text-decoration-none"><input class="btn btn-info text-white" type="button" value="Sign in Facebook"></a>
+                        <a href="../../server/facebook_login.php?action=facebook" class="text-decoration-none"><input class="btn btn-info text-white" type="button" value="Sign in Facebook"></a>
                         </div>
                     </div>
                     

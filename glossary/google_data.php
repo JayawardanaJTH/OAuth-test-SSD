@@ -5,5 +5,5 @@ $googleClientSecret = '7bP45_B-WDUw2UwOIaUNyKE4';
 
 $authorizeURL = 'https://accounts.google.com/o/oauth2/v2/auth';
 $tokenURL = 'https://oauth2.googleapis.com/token';
-$baseURL = 'https://' . $_SERVER['SERVER_NAME'] . '/client/php/register.php';
+$baseURL = 'http://' . $_SERVER['SERVER_NAME'] . ':3000/glossary/server/google_login.php';
 ?>
