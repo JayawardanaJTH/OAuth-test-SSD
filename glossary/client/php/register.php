@@ -16,7 +16,6 @@ session_start();
     integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
 
-    <script src='main.js'></script>
     <link rel="stylesheet" href="../styles/index.css">
 </head>
 
