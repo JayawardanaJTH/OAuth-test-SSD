@@ -17,7 +17,7 @@ if (isset($_POST['submit'])) {
 
     move_uploaded_file($file_tmp, $path);
 
-    $folder_id = create_folder("google-drive-test-folder");
+    $folder_id = create_folder("Glossary");
 
     $success = insert_file_to_drive($path, $file_name, $folder_id);
 
@@ -81,38 +81,6 @@ function check_folder_exists($folder_name)
     return $op;
 }
 
-// This will display list of folders and direct child folders and files.
-function get_files_and_folders()
-{
-    $service = new Google_Service_Drive($GLOBALS['client']);
-
-    $parameters['q'] = "mimeType='application/vnd.google-apps.folder' and 'root' in parents and trashed=false";
-    $files = $service->files->listFiles($parameters);
-
-    echo "<ul>";
-    foreach ($files as $k => $file) {
-        echo "<li> 
-        
-            {$file['name']} - {$file['id']} ---- " . $file['mimeType'];
-
-        try {
-            // subfiles
-            $sub_files = $service->files->listFiles(array('q' => "'{$file['id']}' in parents"));
-            echo "<ul>";
-            foreach ($sub_files as $kk => $sub_file) {
-                echo "<li&gt {$sub_file['name']} - {$sub_file['id']}  ---- " . $sub_file['mimeType'] . " </li>";
-            }
-            echo "</ul>";
-        }
-        catch (\Throwable $th) {
-        // dd($th);
-        }
-
-        echo "</li>";
-    }
-    echo "</ul>";
-}
-
 // This will insert file into drive and returns boolean values.
 function insert_file_to_drive($file_path, $file_name, $parent_file_id = null)
 {
@@ -142,16 +110,41 @@ function insert_file_to_drive($file_path, $file_name, $parent_file_id = null)
     return $is_success;
 }
 
+// This will display list of folders and direct child folders and files.
 if (isset($_GET['list_files_and_folders'])) {
     echo "<h1>Retriving List all files and folders from Google Drive</h1>";
     get_files_and_folders();
 }
 
-// Function just for easier debugging
-function dd(...$d)
+
+function get_files_and_folders()
 {
-    echo "<pre style='background-color:#000;color:#fff;' >";
-    print_r($d);
-    exit;
+    $service = new Google_Service_Drive($GLOBALS['client']);
+
+    $parameters['q'] = "'1vkeWJhoQowQ2-JAbPj4yuMfwpsq0cScM' in parents";
+    $files = $service->files->listFiles($parameters);
+
+    $names = array();
+    $ids = array();
+    $types = array();
+    $file_count = 0;
+
+    foreach ($files as $k => $file) {
+
+        $names[] = $file['name'];
+        $ids[] = $file['id'];
+        $types[] = $file['mimeType'];
+        $file_count++;
+    }
+
+    $_SESSION['names'] = $names;
+    $_SESSION['ids'] = $ids;
+    $_SESSION['types'] = $types;
+    $_SESSION['file_count'] = $file_count;
+
+
 }
+
+
+
 ?>
