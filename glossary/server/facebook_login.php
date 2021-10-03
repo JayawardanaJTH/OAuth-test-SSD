@@ -14,5 +14,6 @@ $fb = new Facebook\Facebook([
 
 $helper = $fb->getRedirectLoginHelper();
 $login_url = $helper->getLoginUrl("http://localhost/OAuth-test-SSD/glossary/client/php/");
+header('Location:'.$login_url);
 
 ?>
