@@ -1,62 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Document</title>
-
-    <link rel="shortcut icon" type="image/jpg" href="../images/tick_icon.svg.png" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" 
-    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-
-    <link rel="stylesheet" href="../styles/index.css">
-</head>
-<body>
-    <?php
-include_once 'C:/xampp2/php/vendor/autoload.php';
-
-$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-
-$client = new Google\Client();
-$client->setAuthConfig('credentials.json');
-$client->setRedirectUri($redirect_uri);
-$client->addScope("https://www.googleapis.com/auth/drive");
-$service = new Google\Service\Drive($client);
-
-// We'll setup an empty 1MB file to upload.
-DEFINE("TESTFILE", 'testfile-small.txt');
-if (!file_exists(TESTFILE)) {
-    $fh = fopen(TESTFILE, 'w');
-    fseek($fh, 1024 * 1024);
-    fwrite($fh, "!", 1);
-    fclose($fh);
-}
-
-// This is uploading a file directly, with no metadata associated.
-$file = new Google\Service\Drive\DriveFile();
-$result = $service->files->create(
-    $file,
-    array(
-    'data' => file_get_contents(TESTFILE),
-    'mimeType' => 'application/octet-stream',
-    'uploadType' => 'media'
-)
-);
-
-// Now lets try and send the metadata as well using multipart!
-$file = new Google\Service\Drive\DriveFile();
-$file->setName("Hello World!");
-$result2 = $service->files->create(
-    $file,
-    array(
-    'data' => file_get_contents(TESTFILE),
-    'mimeType' => 'application/octet-stream',
-    'uploadType' => 'multipart'
-)
-);
+<?php
+include('../../google_data.php');
+$page_title = 'Upload Document';
+include('helpers/header.php');
 
 ?>
+
+<body style="background-image: url(../images/back1.jpg); background-size: 1480px;">
+    <!-- Header and navigation -->
+    <div>
+        <!-- Header -->
+        <div class="header text-white p-5 ">
+            <header class="row text-center">
+                <div class="header-logo ">
+                    <span class="h3">Online Store</span>
+                </div>
+                <div class="header-description">
+<?php
+if (!isset($_GET['action'])) {
+
+    if (!empty($_SESSION['user_id'])) {
+        echo '<p>' . $_SESSION['email'] . '</p>';
+        echo $_SESSION['access_token'];
+?>
+                    <div class="input-group">
+<?php
+        echo '<a href="../../server/google_login.php?action=logout" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Log Out"></a>';
+    }
+    else {
+        echo '<a href="#" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Login"></a>';
+    }
+}
+?>
+                        
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <!-- Navigation bar -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-item nav-link" href="#">Cart</a>
+                    <a class="nav-item nav-link" href="#">Add Item</a>
+                    
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.6)">
+        <div class="row justify-content-center mt-5">
+            <form action="../../server/upload_service.php" method="post" enctype="multipart/form-data">
+            <div class="input-group"> 
+                <div class="input-group-prepend">
+                    <div class="input-group-text"><i class="fa fa-image"></i></div>
+                </div>
+                <input type="file" name="document" id="document" class="form-control" />
+                </div>
+                <div class="row justify-content-center mt-5">
+                    <input type="submit" name="submit" value="Upload" class="btn btn-primary"/>
+                </div>
+            </form> 
+        </div>
+        <div class="mt-5">
+            <table class="table table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>

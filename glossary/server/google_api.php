@@ -1,9 +1,9 @@
 <?php
 require 'C:/xampp2/php/vendor/autoload.php';
 
-if (php_sapi_name() != 'cli') {
-    throw new Exception('This application must be run on the command line.');
-}
+// if (php_sapi_name() != 'cli') {
+//     throw new Exception('This application must be run on the command line.');
+// }
 
 /**
  * Returns an authorized API client.
@@ -13,7 +13,7 @@ function getClient()
 {
     $client = new Google_Client();
     $client->setRedirectUri('../client/php/index.php');
-    $client->setApplicationName('Google Drive API PHP Quickstart');
+    $client->setApplicationName('Glossary Store');
     $client->setScopes(Google_Service_Drive::DRIVE);
     $client->setAuthConfig('credentials.json');
     $client->setAccessType('offline');
