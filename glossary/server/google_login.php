@@ -1,4 +1,5 @@
 <?php
+require 'C:/xampp2/php/vendor/autoload.php';
 include('../google_data.php');
 include('google_api.php');
 session_start();
@@ -25,15 +26,20 @@ if (isset($_GET['code'])) {
         header('Location: ' . $baseURL . '?error=invalid_state');
         die();
     }
+
     $client_object = get_access_token($_GET['code']);
+    $user_data = get_user_details($client_object);
 
-    // $_SESSION['user_id'] = $userinfo['sub'];
-    // $_SESSION['email'] = $userinfo['email'];
-    // $_SESSION['access_token'] = $data['access_token'];
-    // $_SESSION['id_token'] = $data['id_token'];
-    // $_SESSION['userinfo'] = $userinfo;
+    $_SESSION['user_id'] = $client_object->getClientId();
+    $_SESSION['email'] = $user_data['email'];
+    $_SESSION['picture'] = $user_data['picture'];
+    $_SESSION['access_token'] = $client_object->getAccessToken()['access_token'];
+    $_SESSION['id_token'] = $client_object->getAccessToken()['id_token'];
+    $_SESSION['userinfo'] = $user_data;
 
-    header('Location: ../client/php/register.php');
+    header('Location: ../client/php/index.php');
+    // print_r($client_object->getAccessToken()['id_token']);
+    // print_r($client_object->getClientId());
     die();
 }
 

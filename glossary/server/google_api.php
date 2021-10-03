@@ -66,5 +66,14 @@ function get_access_token($authCode = null)
     return $client_object;
 }
 
+function get_user_details($client_object)
+{
+    $service = new Google_Service_Oauth2($client_object);
+
+    //Get user profile data from google
+    $data = $service->userinfo->get();
+
+    return $data;
+}
 $client = get_access_token();
 ?>
