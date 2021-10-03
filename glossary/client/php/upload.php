@@ -1,8 +1,12 @@
 <?php
+error_reporting(E_ERROR | E_PARSE);
+
 include('../../google_data.php');
 $page_title = 'Upload Document';
 include('helpers/header.php');
+include('../../server/upload_service.php');
 
+get_files_and_folders()
 ?>
 
 <body style="background-image: url(../images/back1.jpg); background-size: 1480px;">
@@ -20,7 +24,6 @@ if (!isset($_GET['action'])) {
 
     if (!empty($_SESSION['user_id'])) {
         echo '<p>' . $_SESSION['email'] . '</p>';
-        echo $_SESSION['access_token'];
 ?>
                     <div class="input-group">
 <?php
@@ -73,15 +76,48 @@ if (!isset($_GET['action'])) {
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Link</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <?php
+if (isset($_SESSION['files'])) {
 
+    $names = array();
+    $ids = array();
+    $types = array();
+    $file_count = array();
+
+    $names = $_SESSION['names'];
+    $ids = $_SESSION['ids'];
+    $types = $_SESSION['types'];
+    $file_count = $_SESSION['file_count'];
+
+    for ($i = 0; $i < $file_count; $i++) {
+
+        echo "<tr>
+        <td> " . $names[$i];
+        echo "</td>
+        <td>" . $types[$i];
+        echo "</td>
+        <td> 
+        <a href='https://drive.google.com/file/d/$ids[$i]'>link </a>";
+        echo "</td>
+</tr>";
+
+
+    
+}
+}
+
+?>
+                
                 </tbody>
             </table>
         </div>
     </div>
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 

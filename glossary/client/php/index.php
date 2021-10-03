@@ -17,19 +17,13 @@ include('helpers/header.php');
                     <div class="input-group">
                     <?php
 if (!isset($_GET['action'])) {
+
     if (!empty($_SESSION['user_id'])) {
-        echo '<a href="#" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Log Out"></a>';
-
-        // Fetch user info from Google's userinfo endpoint
-        echo '<h3>User Info</h3>';
-        echo '<pre>';
-        $ch = curl_init('https://www.googleapis.com/oauth2/v3/userinfo');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $_SESSION['access_token']
-        ]);
-        curl_exec($ch);
-        echo '</pre>';
-
+        echo '<p>' . $_SESSION['email'] . '</p>';
+?>
+                    <div class="input-group">
+<?php
+        echo '<a href="../../server/google_login.php?action=logout" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Log Out"></a>';
     }
     else {
         echo '<a href="register.php" class="text-decoration-none"><input class="btn btn-dark" type="button" value="Login"></a>';
