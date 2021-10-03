@@ -14,6 +14,29 @@ $fb = new Facebook\Facebook([
 
 $helper = $fb->getRedirectLoginHelper();
 $login_url = $helper->getLoginUrl("http://localhost/OAuth-test-SSD/glossary/client/php/");
-header('Location:'.$login_url);
 
+try {
+    header('Location:'.$login_url);
+    $accessToken = $helper->getAccessToken();
+    if(isset($accessToken )) {
+        $_SESSION['access_token'] = (string)$accessToken;
+        print_r($accessToken);
+        //if session is set we can redirect to user to any page
+        header("Location: http://localhost/OAuth-test-SSD/glossary/client/php/index.php");
+    }
+} catch (Exception $exc) {
+    echo $exe->getTraceAsString();
+}
+
+if(isset($_SESSION['access_token'])) {
+    try {
+        $fb->setDefaultAccessToken($_SESSION['access_token']);
+        $res->GET('/me?locale=en_US&fields=name,email');
+        $user = $res->getGraphUser();
+        echo 'Hello' ,$user->getField('name');
+    } catch (Exception $exc) {
+        echo $exe->getTraceAsString();
+    }
+
+} 
 ?>
