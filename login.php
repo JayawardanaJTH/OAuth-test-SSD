@@ -7,7 +7,7 @@ if(isset($_SESSION['access_token'])){
 }
 
 
-$redirectTo = "http://localhost/Facebook/callback.php";
+$redirectTo = "http://localhost/OAuth-test-SSD/callback.php";
 $data = ['email'];
 $fullURL = $handler->getLoginUrl($redirectTo, $data);
 ?>
