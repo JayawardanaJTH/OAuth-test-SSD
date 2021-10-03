@@ -36,6 +36,7 @@ if (isset($_GET['code'])) {
     $_SESSION['access_token'] = $client_object->getAccessToken()['access_token'];
     $_SESSION['id_token'] = $client_object->getAccessToken()['id_token'];
     $_SESSION['userinfo'] = $user_data;
+    $_SESSION['logged_mode'] = 'google';
 
     header('Location: ../client/php/index.php');
     // print_r($client_object->getAccessToken()['id_token']);
@@ -50,7 +51,14 @@ if (isset($_GET['error'])) {
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+
     unset($_SESSION['user_id']);
+    unset($_SESSION['email']);
+    unset($_SESSION['picture']);
+    unset($_SESSION['id_token']);
+    unset($_SESSION['access_token']);
+    unset($_SESSION['userinfo']);
+    unset($_SESSION['logged_mode']);
 
     header('Location: ../client/php/index.php');
     die();

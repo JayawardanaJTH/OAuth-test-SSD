@@ -119,32 +119,35 @@ if (isset($_GET['list_files_and_folders'])) {
 
 function get_files_and_folders()
 {
-    $service = new Google_Service_Drive($GLOBALS['client']);
+    if (!empty($_SESSION['user_id'])) {
+        $service = new Google_Service_Drive($GLOBALS['client']);
 
-    $parameters['q'] = "'1vkeWJhoQowQ2-JAbPj4yuMfwpsq0cScM' in parents";
-    $files = $service->files->listFiles($parameters);
+        $parameters['q'] = "'1vkeWJhoQowQ2-JAbPj4yuMfwpsq0cScM' in parents";
+        $files = $service->files->listFiles($parameters);
 
-    $names = array();
-    $ids = array();
-    $types = array();
-    $file_count = 0;
+        $names = array();
+        $ids = array();
+        $types = array();
+        $file_count = 0;
 
-    foreach ($files as $k => $file) {
+        foreach ($files as $k => $file) {
 
-        $names[] = $file['name'];
-        $ids[] = $file['id'];
-        $types[] = $file['mimeType'];
-        $file_count++;
+            $names[] = $file['name'];
+            $ids[] = $file['id'];
+            $types[] = $file['mimeType'];
+            $file_count++;
+        }
+
+        $_SESSION['names'] = $names;
+        $_SESSION['ids'] = $ids;
+        $_SESSION['types'] = $types;
+        $_SESSION['file_count'] = $file_count;
+
     }
-
-    $_SESSION['names'] = $names;
-    $_SESSION['ids'] = $ids;
-    $_SESSION['types'] = $types;
-    $_SESSION['file_count'] = $file_count;
-
-
+    else {
+        header('Location: ../php/register.php');
+    }
 }
-
 
 
 ?>
