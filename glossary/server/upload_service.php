@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ERROR | E_PARSE);
 require 'google_api.php';
+session_start();
 
 if (isset($_POST['submit'])) {
 
@@ -21,10 +22,12 @@ if (isset($_POST['submit'])) {
     $success = insert_file_to_drive($path, $file_name, $folder_id);
 
     if ($success) {
-        echo "file uploaded successfully";
+        $_SESSION['upload_details'] = true;
+        header('Location: ../client/php/upload.php');
     }
     else {
-        echo "Something went wrong.";
+        $_SESSION['upload_details'] = false;
+        header('Location: ../client/php/upload.php');
     }
 }
 

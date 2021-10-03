@@ -82,5 +82,42 @@ if (!isset($_GET['action'])) {
             </table>
         </div>
     </div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <?php
+if (isset($_SESSION['upload_details'])) {
+    if ($_SESSION['upload_details'] == true) {
+        unset($_SESSION['upload_details']);
+
+?>
+        <script type="text/javascript">
+            Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'File is uploaded',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+        </script>
+<?php
+    }
+    elseif ($_SESSION['upload_details'] == false) {
+        unset($_SESSION['upload_details']);
+?>
+        <script type="text/javascript">
+            Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'File is not uploaded',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+        </script>
+<?php
+    }
+}
+?>
+    
 </body>
 </html>
