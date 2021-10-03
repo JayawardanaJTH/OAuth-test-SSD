@@ -34,6 +34,7 @@ if (!isset($_GET['action'])) {
 
     if (!empty($_SESSION['user_id'])) {
         echo '<p>' . $_SESSION['email'] . '</p>';
+        echo $_SESSION['access_token'];
 ?>
                     <div class="input-group">
 <?php
