@@ -1,5 +1,5 @@
 <?php
-require '../../vendor/autoload.php';
+require '../../fb_vendor/autoload.php';
 
 function get_fb_client()
 {
