@@ -1,42 +1,53 @@
 <?php
 
+include 'facebook_api.php';
+include 'facebook_data.php';
 //start the session
 session_start();
 
-//include autoload file from vendor folder
-require '../../vendor/autoload.php';
+if (isset($_GET['action']) && $_GET['action'] == 'facebook') {
+    unset($_SESSION['user_id']);
 
-$fb = new Facebook\Facebook([
-    'app_id' => '612492623086513',
-    'app_secret' => '13a71c4e33d467edcb6c354148541ab3',
-    'default_graph_version' => 'v2.7'
-]);
-
-$helper = $fb->getRedirectLoginHelper();
-$login_url = $helper->getLoginUrl("http://localhost/OAuth-test-SSD/glossary/client/php/");
-
-try {
-    header('Location:'.$login_url);
-    $accessToken = $helper->getAccessToken();
-    if(isset($accessToken )) {
-        $_SESSION['access_token'] = (string)$accessToken;
-        print_r($accessToken);
-        //if session is set we can redirect to user to any page
-        header("Location: http://localhost/OAuth-test-SSD/glossary/client/php/index.php");
-    }
-} catch (Exception $exc) {
-    echo $exe->getTraceAsString();
+    $author_URL = get_auth_url();
+    // Redirect the user to Google's authorization page
+    header('Location: ' . $author_URL);
+    die();
 }
 
-if(isset($_SESSION['access_token'])) {
-    try {
-        $fb->setDefaultAccessToken($_SESSION['access_token']);
-        $res->GET('/me?locale=en_US&fields=name,email');
-        $user = $res->getGraphUser();
-        echo 'Hello' ,$user->getField('name');
-    } catch (Exception $exc) {
-        echo $exe->getTraceAsString();
-    }
+if (isset($_GET['code'])) {
+    // Exchange the authorization code for an access token
+    $ch = curl_init($tokenURL);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+        'grant_type' => 'authorization_code',
+        'client_id' => $facebookClientID,
+        'client_secret' => $facebookClientSecret,
+        'redirect_uri' => $baseURL,
+        'code' => $_GET['code']
+    ]));
 
-} 
+    // $response = json_decode(curl_exec($ch), true);
+    $response = curl_exec($ch);
+    $data = json_decode($response, true);
+
+    make_fb_token($data);
+
+    $_SESSION['access_token'] = $data['access_token'];
+
+    header('Location: ../client/php/register.php');
+    die();
+}
+
+if (isset($_GET['error'])) {
+    header('Location: ../client/php/error.php');
+    die();
+}
+
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+    unset($_SESSION['user_id']);
+
+    header('Location: ../client/php/index.php');
+    die();
+}
+
 ?>
