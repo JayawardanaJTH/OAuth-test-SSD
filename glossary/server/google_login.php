@@ -1,5 +1,7 @@
 <?php
+require 'C:/xampp2/php/vendor/autoload.php';
 include('../google_data.php');
+include('google_api.php');
 session_start();
 
 if (isset($_GET['action']) && $_GET['action'] == 'google') {
@@ -8,64 +10,55 @@ if (isset($_GET['action']) && $_GET['action'] == 'google') {
     // Generate a random hash and store in the session
     $_SESSION['state'] = bin2hex(random_bytes(16));
 
-    $params = array(
-        'response_type' => 'code',
-        'client_id' => $googleClientID,
-        'redirect_uri' => $baseURL,
-        'scope' => 'openid email',
-        'state' => $_SESSION['state']
-    );
+    $auth_url = get_auth_url();
 
     // Redirect the user to Google's authorization page
-    header('Location: ' . $authorizeURL . '?' . http_build_query($params));
+    header('Location: ' . $auth_url);
     die();
 }
 
 if (isset($_GET['code'])) {
+
+    $_SESSION['auth_code'] = $_GET['code'];
+
     // Verify the state matches our stored state
     if (!isset($_GET['state']) || $_SESSION['state'] != $_GET['state']) {
         header('Location: ' . $baseURL . '?error=invalid_state');
         die();
     }
 
-    // Exchange the authorization code for an access token
-    $ch = curl_init($tokenURL);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-        'grant_type' => 'authorization_code',
-        'client_id' => $googleClientID,
-        'client_secret' => $googleClientSecret,
-        'redirect_uri' => $baseURL,
-        'code' => $_GET['code']
-    ]));
+    $client_object = get_access_token($_GET['code']);
+    $user_data = get_user_details($client_object);
 
-    // $response = json_decode(curl_exec($ch), true);
-    $response = curl_exec($ch);
-    $data = json_decode($response, true);
+    $_SESSION['user_id'] = $client_object->getClientId();
+    $_SESSION['email'] = $user_data['email'];
+    $_SESSION['picture'] = $user_data['picture'];
+    $_SESSION['access_token'] = $client_object->getAccessToken()['access_token'];
+    $_SESSION['id_token'] = $client_object->getAccessToken()['id_token'];
+    $_SESSION['userinfo'] = $user_data;
+    $_SESSION['logged_mode'] = 'google';
 
-    // Split the JWT string into three parts
-    $jwt = explode('.', $data['id_token']);
-
-    // Extract the middle part, base64 decode, then json_decode it
-    $userinfo = json_decode(base64_decode($jwt[1]), true);
-
-    $_SESSION['user_id'] = $userinfo['sub'];
-    $_SESSION['email'] = $userinfo['email'];
-    $_SESSION['access_token'] = $data['access_token'];
-    $_SESSION['id_token'] = $data['id_token'];
-    $_SESSION['userinfo'] = $userinfo;
-
-    header('Location: ../client/php/register.php');
+    header('Location: ../client/php/index.php');
+    // print_r($client_object->getAccessToken()['id_token']);
+    // print_r($client_object->getClientId());
     die();
 }
 
 if (isset($_GET['error'])) {
-    header('Location: ../client/php/error.php');
+    echo $_GET['error'];
+    // header('Location: ../client/php/error.php');
     die();
 }
 
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+
     unset($_SESSION['user_id']);
+    unset($_SESSION['email']);
+    unset($_SESSION['picture']);
+    unset($_SESSION['id_token']);
+    unset($_SESSION['access_token']);
+    unset($_SESSION['userinfo']);
+    unset($_SESSION['logged_mode']);
 
     header('Location: ../client/php/index.php');
     die();

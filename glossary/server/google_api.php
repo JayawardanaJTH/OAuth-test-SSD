@@ -1,84 +1,79 @@
 <?php
 require 'C:/xampp2/php/vendor/autoload.php';
 
-// if (php_sapi_name() != 'cli') {
-//     throw new Exception('This application must be run on the command line.');
-// }
+$client;
 
-/**
- * Returns an authorized API client.
- * @return Google_Client the authorized client object
- */
 function getClient()
 {
     $client = new Google_Client();
-    $client->setRedirectUri('../client/php/index.php');
     $client->setApplicationName('Glossary Store');
     $client->setScopes(Google_Service_Drive::DRIVE);
-    $client->setAuthConfig('credentials.json');
+    $client->addScope("openid");
+    $client->addScope("email");
+    $client->setAuthConfig('C:\Users\User\Desktop\SSD\glossary\server\credentials.json');
     $client->setAccessType('offline');
     $client->setPrompt('select_account consent');
+    $client->setState($_SESSION['state']);
 
-    // Load previously authorized token from a file, if it exists.
-    // The file token.json stores the user's access and refresh tokens, and is
-    // created automatically when the authorization flow completes for the first
-    // time.
-    $tokenPath = 'token.json';
+    $tokenPath = 'C:\Users\User\Desktop\SSD\glossary\server\token.json';
     if (file_exists($tokenPath)) {
         $accessToken = json_decode(file_get_contents($tokenPath), true);
         $client->setAccessToken($accessToken);
     }
+    return $client;
+}
 
-    // If there is no previous token or it's expired.
-    if ($client->isAccessTokenExpired()) {
-        // Refresh the token if possible, else fetch a new one.
-        if ($client->getRefreshToken()) {
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+function get_auth_url()
+{
+
+    $client_object = getClient();
+    $authUrl = $client_object->createAuthUrl();
+
+    return $authUrl;
+}
+
+function get_access_token($authCode = null)
+{
+    $tokenPath = 'C:\Users\User\Desktop\SSD\glossary\server\token.json';
+    $client_object = getClient();
+
+    if ($client_object->isAccessTokenExpired()) {
+
+        if ($client_object->getRefreshToken()) {
+            $client_object->fetchAccessTokenWithRefreshToken($client_object->getRefreshToken());
         }
         else {
-            // Request authorization from the user.
-            $authUrl = $client->createAuthUrl();
-            printf("Open the following link in your browser:\n%s\n", $authUrl);
-            print 'Enter verification code: ';
-            $authCode = trim(fgets(STDIN));
-
-            // Exchange authorization code for an access token.
-            $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
-            $client->setAccessToken($accessToken);
-
-            // Check to see if there was an error.
+            // Exchange authorization code for an access token.            
+            $accessToken = $client_object->fetchAccessTokenWithAuthCode($authCode);
+            print_r($accessToken);
+            $client_object->setAccessToken($accessToken);
+            // Check to see if there was an error.            
             if (array_key_exists('error', $accessToken)) {
                 throw new Exception(join(', ', $accessToken));
             }
         }
-        // Save the token to a file.
-        if (!file_exists(dirname($tokenPath))) {
-            mkdir(dirname($tokenPath), 0700, true);
-        }
-        file_put_contents($tokenPath, json_encode($client->getAccessToken()));
+
+
     }
-    return $client;
+
+    if (!file_exists(dirname($tokenPath))) {
+        mkdir(dirname($tokenPath), 0700, true);
+    }
+
+    file_put_contents($tokenPath, json_encode($client_object->getAccessToken()));
+    $GLOBALS['client'] = $client_object;
+
+    return $client_object;
 }
 
+function get_user_details($client_object)
+{
+    $service = new Google_Service_Oauth2($client_object);
 
-// Get the API client and construct the service object.
-$client = getClient();
-$service = new Google_Service_Drive($client);
+    //Get user profile data from google
+    $data = $service->userinfo->get();
 
-// Print the names and IDs for up to 10 files.
-// $optParams = array(
-//     'pageSize' => 10,
-//     'fields' => 'nextPageToken, files(id, name)'
-// );
-// $results = $service->files->listFiles($optParams);
-
-// if (count($results->getFiles()) == 0) {
-//     print "No files found.\n";
-// }
-// else {
-//     print "Files:\n";
-//     foreach ($results->getFiles() as $file) {
-//         printf("%s (%s)\n", $file->getName(), $file->getId());
-//     }
-// }
+    return $data;
+}
+$client = get_access_token();
 ?>
