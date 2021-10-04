@@ -1,5 +1,5 @@
 <?php
-require '../../vendor/autoload.php';
+require 'C:/xampp2/php/vendor/autoload.php';
 
 $client;
 
@@ -13,7 +13,9 @@ function getClient()
     $client->setAuthConfig('C:\Users\User\Desktop\SSD\glossary\server\credentials.json');
     $client->setAccessType('offline');
     $client->setPrompt('select_account consent');
-    $client->setState($_SESSION['state']);
+    if (isset($_SESSION['state'])) {
+        $client->setState($_SESSION['state']);
+    }
 
     $tokenPath = 'C:\Users\User\Desktop\SSD\glossary\server\token.json';
     if (file_exists($tokenPath)) {
