@@ -3,6 +3,7 @@
 This is Secure Software Development assingment.\
 The purpose of this is to get understand about the `OAuth 2.0`.
 
+Here user `Google` and `Facebook` authentication for login. Other than that Google is use to upload document to the Google Drive.
 ## 
 ## Installation Instructions
 
