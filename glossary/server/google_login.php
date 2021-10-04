@@ -1,5 +1,5 @@
 <?php
-require 'C:/xampp2/php/vendor/autoload.php';
+require '../../vendor/autoload.php';
 include('../google_data.php');
 include('google_api.php');
 session_start();

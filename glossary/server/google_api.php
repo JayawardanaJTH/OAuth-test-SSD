@@ -1,5 +1,5 @@
 <?php
-require 'C:/xampp2/php/vendor/autoload.php';
+require '../../vendor/autoload.php';
 
 $client;
 
