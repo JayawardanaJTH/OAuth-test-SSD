@@ -1,5 +1,5 @@
 <?php
-require '../../vendor/autoload.php';
+require 'C:/xampp2/php/vendor/autoload.php';
 include('../google_data.php');
 include('google_api.php');
 session_start();
@@ -59,6 +59,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     unset($_SESSION['access_token']);
     unset($_SESSION['userinfo']);
     unset($_SESSION['logged_mode']);
+    unset($_SESSION['names']);
+    unset($_SESSION['ids']);
+    unset($_SESSION['types']);
+    unset($_SESSION['file_count']);
 
     header('Location: ../client/php/index.php');
     die();
