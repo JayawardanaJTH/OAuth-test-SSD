@@ -19,7 +19,7 @@ function get_auth_url()
 
     $auth_url = $helper->getLoginUrl('http://localhost:3000/glossary/server/facebook_login.php');
 
-    return $auth_url . 'public_profile%20user_posts%20user_friends%20user_photos';
+    return $auth_url . 'public_profile%20email';
 }
 
 function make_fb_token($data)
