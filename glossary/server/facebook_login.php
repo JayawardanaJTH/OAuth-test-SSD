@@ -34,7 +34,26 @@ if (isset($_GET['code'])) {
 
     $_SESSION['access_token'] = $data['access_token'];
 
-    header('Location: ../client/php/register.php');
+    $ch = curl_init('https://graph.facebook.com/v2.8/me?fields=id,name,email');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $headers = array(
+        'Content-type: application/json',
+        'Authorization: Bearer ' . $_SESSION['access_token']
+    );
+
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    // $response = json_decode(curl_exec($ch), true);
+    $response = curl_exec($ch);
+    $data = json_decode($response, true);
+
+    print_r($data);
+
+    $_SESSION['user_id'] = $data['id'];
+    $_SESSION['email'] = $data['email'];
+
+    header('Location: ../client/php/index.php');
     die();
 }
 
